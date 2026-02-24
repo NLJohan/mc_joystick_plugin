@@ -34,6 +34,8 @@ void mc_joystick_plugin::init(mc_control::MCGlobalController & controller, const
       "Joystick::Trigger", [this](joystickAnalogicInputs trigger) -> double { return get_inputs(trigger); });
   controller.controller().datastore().make_call(
       "Joystick::Stick", [this](joystickAnalogicInputs stick) -> Eigen::Vector2d { return get_stick_value(stick); });
+  controller.controller().datastore().make_call(
+      "Joystick::Pad", [this](joystickAnalogicInputs pads) -> double { return get_inputs(pads); });
 
   joystick_button_state_.setZero();
   joystick_analogical_state_.setZero();
@@ -167,12 +169,10 @@ void mc_joystick_plugin::before(mc_control::MCGlobalController & controller)
         {
           if(static_cast<double>(event_.value) == 32767)
           {
-            std::cout << "right pad" << std::endl;
             joystick_analogical_state_(joystickAnalogicInputs::RIGHT_PAD, 0) = value;
           }
           else if(static_cast<double>(event_.value) == -32767)
           {
-            std::cout << "left pad" << std::endl;
             joystick_analogical_state_(joystickAnalogicInputs::LEFT_PAD, 0) = value;
           }
         }
@@ -180,13 +180,10 @@ void mc_joystick_plugin::before(mc_control::MCGlobalController & controller)
         {
           if(static_cast<double>(event_.value) == 32767)
           {
-            std::cout << "bottom pad" << std::endl;
             joystick_analogical_state_(joystickAnalogicInputs::DOWN_PAD, 0) = value;
           }
           else if(static_cast<double>(event_.value) == -32767)
           {
-
-            std::cout << "up pad" << std::endl;
             joystick_analogical_state_(joystickAnalogicInputs::UP_PAD, 0) = value;
           }
         }

@@ -14,13 +14,13 @@
 
 #include "joystick.hh"
 
-#include <sys/types.h>
-#include <sys/stat.h>
+#include "unistd.h"
 #include <fcntl.h>
 #include <iostream>
-#include <string>
 #include <sstream>
-#include "unistd.h"
+#include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 Joystick::Joystick()
 {
@@ -51,7 +51,7 @@ void Joystick::reset()
 
 void Joystick::reset(int joystickNumber)
 {
-  
+
   std::stringstream sstm;
   sstm << "/dev/input/js" << joystickNumber;
   reset(sstm.str());
@@ -59,7 +59,7 @@ void Joystick::reset(int joystickNumber)
 
 void Joystick::reset(std::string devicePath)
 {
-  reset(devicePath,false);
+  reset(devicePath, false);
 }
 
 void Joystick::reset(std::string devicePath, bool blocking)
@@ -76,12 +76,11 @@ void Joystick::openPath(std::string devicePath, bool blocking)
   _fd = open(devicePath.c_str(), blocking ? O_RDONLY : O_RDONLY | O_NONBLOCK);
 }
 
-bool Joystick::sample(JoystickEvent* event)
+bool Joystick::sample(JoystickEvent * event)
 {
   ssize_t bytes = read(_fd, event, sizeof(*event));
 
-  if (bytes == -1)
-    return false;
+  if(bytes == -1) return false;
 
   // NOTE if this condition is not met, we're probably out of sync and this
   // Joystick instance is likely unusable
@@ -98,10 +97,9 @@ Joystick::~Joystick()
   close(_fd);
 }
 
-std::ostream& operator<<(std::ostream& os, const JoystickEvent& e)
+std::ostream & operator<<(std::ostream & os, const JoystickEvent & e)
 {
-  os << "type=" << static_cast<int>(e.type)
-     << " number=" << static_cast<int>(e.number)
+  os << "type=" << static_cast<int>(e.type) << " number=" << static_cast<int>(e.number)
      << " value=" << static_cast<int>(e.value);
   return os;
 }

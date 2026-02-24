@@ -3,7 +3,7 @@ mc_rtc plugin for joystick controller
 
 This project is a [mc_rtc] plugin to interract with a joystick controller, it has been tested for Xbox controllers
 
-## Installation 
+## Installation
 
 In repo directory :
 ```shell
@@ -24,7 +24,7 @@ bool joystick_online = ctl.datastore().get<bool>("Joystick::connected");
 You can access the value of an input using the function loaded in the datastore
 ```cpp
   auto & buttonFunc = ctl.datastore().get<std::function<bool(joystickButtonInputs button)>>("Joystick::Button");
-  
+
   //Button event is a boolean which is true if the state of the button change
   auto & buttonEventFunc = ctl.datastore().get<std::function<bool(joystickButtonInputs button)>>("Joystick::ButtonEvent");
 

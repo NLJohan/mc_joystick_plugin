@@ -157,8 +157,6 @@ public:
   void reset(std::string devicePath);
 
   void reset(std::string devicePath, bool blocking);
-
-
 };
 
 #endif

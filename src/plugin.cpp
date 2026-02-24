@@ -68,12 +68,20 @@ void mc_joystick_plugin::init(mc_control::MCGlobalController & controller, const
 
   auto & logger = controller.controller().logger();
   logger.addLogEntries(
-      this, "joystick_plugin_button_sate", [this]() -> const Eigen::Matrix<double, joystickButtonInputs::N_button_inputs, 1> & { return joystick_button_state_; },
-      "joystick_plugin_button_event", [this]() -> const Eigen::Matrix<double, joystickButtonInputs::N_button_inputs, 1> & { return joystick_button_event_; },
-      "joystick_plugin_analogical_state_0", [this]() -> const Eigen::Matrix<double, joystickAnalogicInputs::N_analogic_inputs, 1> { return joystick_analogical_state_.col(0); },
-      "joystick_plugin_analogical_state_1", [this]() -> const Eigen::Matrix<double, joystickAnalogicInputs::N_analogic_inputs, 1> { return joystick_analogical_state_.col(1); }
-      
-      );
+      this, "joystick_plugin_button_sate",
+      [this]() -> const Eigen::Matrix<double, joystickButtonInputs::N_button_inputs, 1> &
+      { return joystick_button_state_; },
+      "joystick_plugin_button_event",
+      [this]() -> const Eigen::Matrix<double, joystickButtonInputs::N_button_inputs, 1> &
+      { return joystick_button_event_; },
+      "joystick_plugin_analogical_state_0",
+      [this]() -> const Eigen::Matrix<double, joystickAnalogicInputs::N_analogic_inputs, 1>
+      { return joystick_analogical_state_.col(0); },
+      "joystick_plugin_analogical_state_1",
+      [this]() -> const Eigen::Matrix<double, joystickAnalogicInputs::N_analogic_inputs, 1>
+      { return joystick_analogical_state_.col(1); }
+
+  );
 }
 
 double mc_joystick_plugin::get_inputs(joystickButtonInputs in)
@@ -120,7 +128,6 @@ void mc_joystick_plugin::before(mc_control::MCGlobalController & controller)
           log->get<Eigen::VectorXd>("joystick_plugin_analogical_state_1", t_indx, Eigen::VectorXd::Zero(0));
     }
     t_indx += 1;
-    
   }
   else if(joystickConnected_)
   {

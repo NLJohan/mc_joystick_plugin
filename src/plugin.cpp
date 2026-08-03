@@ -9,33 +9,33 @@ mc_joystick_plugin::~mc_joystick_plugin() = default;
 
 void mc_joystick_plugin::init(mc_control::MCGlobalController & controller, const mc_rtc::Configuration & config)
 {
-  if(controller.controller().config().has("JoystickPlugin"))
-  {
-    configure(controller.controller().config()("JoystickPlugin"));
-  }
-  else
-  {
-    configure(config);
-  }
-  if(!joystick_.isFound())
-  {
-    joystickConnected_ = false;
-    mc_rtc::log::warning("[mc_joystick_plugin] NO JOYPAD DETECTED");
-  }
-  if(!controller.controller().datastore().has("Joystick::connected"))
-  {
-    controller.controller().datastore().make<bool>("Joystick::connected");
-  }
-  controller.controller().datastore().make_call(
-      "Joystick::Button", [this](joystickButtonInputs button) -> bool { return get_inputs(button) == 1; });
-  controller.controller().datastore().make_call(
-      "Joystick::ButtonEvent", [this](joystickButtonInputs button) -> bool { return get_events(button) == 1.; });
-  controller.controller().datastore().make_call(
-      "Joystick::Trigger", [this](joystickAnalogicInputs trigger) -> double { return get_inputs(trigger); });
-  controller.controller().datastore().make_call(
-      "Joystick::Stick", [this](joystickAnalogicInputs stick) -> Eigen::Vector2d { return get_stick_value(stick); });
-  controller.controller().datastore().make_call(
-      "Joystick::Pad", [this](joystickAnalogicInputs pads) -> double { return get_inputs(pads); });
+  auto & ds = controller.controller().datastore();
+    if(!ds.has("Joystick::connected"))
+    {
+      ds.make<bool>("Joystick::connected");
+    }
+    // Guarded the same way as Joystick::connected above (and the same pattern
+    // already used in footsteps_planner_plugin::reset): init() can run more
+    // than once against the same live datastore -- e.g. mc_rtc_controller_host.py
+    // calls controller.init(...) again on every RL episode reset whenever
+    // layout.use_reset is False, since ISMPC's FSM-based controller doesn't
+    // take the lightweight controller.reset() path. Without this guard, the
+    // second init() throws std::runtime_error ("already exists on the
+    // datastore") and terminate() is called, which is a hard, uncatchable
+    // process abort from the Python side -- this is not a Python-fixable bug.
+    if(!ds.has("Joystick::Button"))
+    {
+      ds.make_call(
+          "Joystick::Button", [this](joystickButtonInputs button) -> bool { return get_inputs(button) == 1; });
+      ds.make_call(
+          "Joystick::ButtonEvent", [this](joystickButtonInputs button) -> bool { return get_events(button) == 1.; });
+      ds.make_call(
+          "Joystick::Trigger", [this](joystickAnalogicInputs trigger) -> double { return get_inputs(trigger); });
+      ds.make_call(
+          "Joystick::Stick", [this](joystickAnalogicInputs stick) -> Eigen::Vector2d { return get_stick_value(stick); });
+      ds.make_call(
+          "Joystick::Pad", [this](joystickAnalogicInputs pads) -> double { return get_inputs(pads); });
+    }
 
   joystick_button_state_.setZero();
   joystick_analogical_state_.setZero();

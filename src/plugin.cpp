@@ -9,6 +9,7 @@ mc_joystick_plugin::~mc_joystick_plugin() = default;
 
 void mc_joystick_plugin::init(mc_control::MCGlobalController & controller, const mc_rtc::Configuration & config)
 {
+  static_cast<void>(config); // unused: nothing in this plugin currently reads its own Configuration argument
   auto & ds = controller.controller().datastore();
     if(!ds.has("Joystick::connected"))
     {
